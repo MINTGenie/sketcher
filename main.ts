@@ -1,3 +1,12 @@
+/**
+ * 10181022
+ * 
+ * temp = 1018
+ * 
+ * y2pos=10181022-(10180000)
+ * 
+ * =1022
+ */
 function dummyInit () {
     colormap = [
     [
@@ -142,17 +151,16 @@ function test_all (iteration: number) {
 function clear_buffer () {
     my_selX = [cursorX]
     my_selY = [cursorY]
-    my_selCol = [coloridx]
 }
 function Draw_to_pos (Xval: number, Yval: number) {
     if (newX < 512) {
         x2pos = Math.round(Math.map(newX, 0, 512, 7, cursorX))
-    } else {
+    } else if (newX >= 512) {
         x2pos = Math.round(Math.map(newX, 513, 1023, cursorX, 0))
     }
     if (newY < 512) {
         y2pos = Math.round(Math.map(newY, 0, 512, 7, cursorY))
-    } else {
+    } else if (newY >= 512) {
         y2pos = Math.round(Math.map(newY, 513, 1023, cursorY, 0))
     }
 }
@@ -168,7 +176,7 @@ function initColorMap (maxrow: number, maxcol: number) {
     colcounter = 0
     for (let index = 0; index < maxrow; index++) {
         for (let index = 0; index < maxcol; index++) {
-            colormap[rowcounter].push(neopixel.colors(NeoPixelColors.Orange))
+            colormap[rowcounter].push(neopixel.colors(NeoPixelColors.Black))
             colcounter += 1
         }
         colormap.push([neopixel.colors(NeoPixelColors.Black)])
@@ -179,6 +187,7 @@ function initColorMap (maxrow: number, maxcol: number) {
     basic.pause(500)
     UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Green))
     display_from_map(maxrow, maxcol)
+    UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Black))
     basic.pause(500)
     Print_Color_map()
     matrix.clear()
@@ -204,9 +213,9 @@ function Print_Color_map () {
     }
 }
 input.onButtonPressed(Button.AB, function () {
-    serial.writeValue("starting write", 1)
+    serial.writeValue("starting write len", my_selX.length)
     for (let index = 0; index <= my_selX.length - 1; index++) {
-        matrix.setPixel(my_selX[index], my_selY[index], my_selCol[index])
+        matrix.setPixel(my_selX[index], my_selY[index], colormap[my_selX[index]][my_selY[index]])
         matrix.show()
     }
     serial.writeValue("starting write", 0)
@@ -225,44 +234,20 @@ function display_from_map (maxrox: number, maxcol: number) {
         rowcounter += 1
     }
 }
+function update_x2y2 () {
+	
+}
 input.onButtonPressed(Button.B, function () {
+    let my_selCol: number[] = []
     serial.writeNumbers(my_selX)
     serial.writeNumbers(my_selY)
     serial.writeNumbers(my_selCol)
+    clear_buffer()
 })
 radio.onReceivedValue(function (name, value) {
-    if (name.includes("10000x+y")) {
-        if (value != prevRadioXY) {
-            serial.writeValue(name, value)
-            prevRadioXY = value
-            drawing_now = true
-            newX = Math.idiv(value, 10000)
-            newY = value - newX * 10000
-            Draw_to_pos(newX, newY)
-            my_selX.push(x2pos)
-            my_selY.push(y2pos)
-            my_selCol.push(colorlist[coloridx])
-            serial.writeNumbers([x2pos, y2pos])
-            matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
-            matrix.show()
-        }
-    } else if (name.includes("coloridx")) {
-        serial.writeValue(name, value)
-        prevCol = coloridx
-        coloridx += 1
-        if (coloridx > 9) {
-            coloridx = 0
-        }
-    } else if (name.includes("draw")) {
-        serial.writeValue(name, value)
-        cursorX = x2pos
-        cursorY = y2pos
-        drawing_now = false
-    } else if (name.includes("cursor")) {
-        newX = Math.idiv(value, 10000)
-        newY = value - newX * 10000
-        Cursor_to_pos3(newX, newY)
-    }
+    msgNameArr.push(name)
+    msgValArr.push(value)
+    serial.writeValue("msg len", msgValArr.length)
 })
 function Cursor_to_pos2 (Xval: number, Yval: number) {
     if (Xval < 512) {
@@ -288,6 +273,39 @@ function Cursor_to_pos2 (Xval: number, Yval: number) {
         }
     }
 }
+function msg_processor (name: string, value: number) {
+    if (name.includes("10000x+y")) {
+        if (value != prevRadioXY) {
+            serial.writeValue(name, value)
+            prevRadioXY = value
+            drawing_now = true
+            newX = Math.idiv(value, 10000)
+            newY = value - newX * 10000
+            Draw_to_pos(newX, newY)
+            my_selX.push(x2pos)
+            my_selY.push(y2pos)
+            UpdateMap(x2pos, y2pos, colorlist[coloridx])
+            matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
+            matrix.show()
+        }
+    } else if (name.includes("coloridx")) {
+        serial.writeValue(name, value)
+        prevCol = coloridx
+        coloridx += 1
+        if (coloridx > 9) {
+            coloridx = 0
+        }
+    } else if (name.includes("draw")) {
+        serial.writeValue(name, value)
+        cursorX = x2pos
+        cursorY = y2pos
+        drawing_now = false
+    } else if (name.includes("cursor")) {
+        newX = Math.idiv(value, 10000)
+        newY = value - newX * 10000
+        Cursor_to_pos3(newX, newY)
+    }
+}
 let prevCol = 0
 let drawing_now = false
 let prevRadioXY = 0
@@ -297,12 +315,13 @@ let y2pos = 0
 let newY = 0
 let x2pos = 0
 let newX = 0
-let my_selCol: number[] = []
 let my_selY: number[] = []
 let my_selX: number[] = []
 let col_num = 0
 let row_num = 0
 let colormap: number[][] = []
+let msgValArr: number[] = []
+let msgNameArr: string[] = []
 let coloridx = 0
 let colorlist: number[] = []
 let matrix: SmartMatrix.Matrix = null
@@ -340,20 +359,36 @@ neopixel.colors(NeoPixelColors.Black)
 coloridx = 0
 serial.writeValue("x", 0)
 clear_buffer()
-/**
- * 10181022
- * 
- * temp = 1018
- * 
- * y2pos=10181022-(10180000)
- * 
- * =1022
- */
+msgNameArr = []
+msgValArr = []
+let bkup_pos_cursor = [3, 3, neopixel.colors(NeoPixelColors.Red)]
 basic.forever(function () {
-    matrix.setPixel(cursorX, cursorY, colorlist[coloridx])
-    matrix.show()
-    basic.pause(100)
-    matrix.setPixel(cursorX, cursorY, neopixel.colors(NeoPixelColors.Black))
-    matrix.show()
-    basic.pause(20)
+    if (!(drawing_now)) {
+        if (bkup_pos_cursor[0] != cursorX || bkup_pos_cursor[1] != cursorY) {
+            serial.writeValue("a", 1)
+            bkup_pos_cursor = [cursorX, cursorY, colormap[cursorX][cursorY]]
+            matrix.setPixel(bkup_pos_cursor[0], bkup_pos_cursor[1], bkup_pos_cursor[2])
+            matrix.show()
+        }
+        if (colormap[cursorX][cursorY] == neopixel.colors(NeoPixelColors.Black)) {
+            serial.writeValue("a", 2)
+            matrix.setPixel(cursorX, cursorY, colorlist[coloridx])
+            matrix.show()
+            basic.pause(100)
+            matrix.setPixel(cursorX, cursorY, neopixel.colors(NeoPixelColors.Black))
+            matrix.show()
+            basic.pause(20)
+        } else if (colormap[cursorX][cursorY] != neopixel.colors(NeoPixelColors.Black)) {
+            serial.writeValue("a", 3)
+            if (bkup_pos_cursor[0] != cursorX || bkup_pos_cursor[1] != cursorY) {
+                serial.writeValue("a", 4)
+                bkup_pos_cursor = [cursorX, cursorY, colormap[cursorX][cursorY]]
+                matrix.setPixel(cursorX, cursorY, colorlist[coloridx])
+                matrix.show()
+            }
+        }
+    }
+    if (msgValArr.length > 0) {
+        msg_processor(msgNameArr.shift(), msgValArr.shift())
+    }
 })
