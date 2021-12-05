@@ -161,6 +161,12 @@ function msg_processor (name2: string, value3: number) {
             UpdateMap(x2pos, y2pos, colorlist[coloridx])
             matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
             matrix.show()
+            basic.pause(20)
+            matrix.setPixel(x2pos, y2pos, neopixel.colors(NeoPixelColors.Black))
+            matrix.show()
+            basic.pause(20)
+            matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
+            matrix.show()
         }
     } else if (name2.includes("coloridx")) {
         serial.writeValue(name2, value3)
