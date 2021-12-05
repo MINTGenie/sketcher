@@ -132,36 +132,20 @@ function dummyInit () {
     ]
     return colormap
 }
-function test_all (iteration: number) {
-    row_num = 7
-    col_num = 0
-    for (let index = 0; index < 8; index++) {
-        for (let index = 0; index < 8; index++) {
-            matrix.setPixel(row_num, col_num, neopixel.rgb(randint(0, 255), randint(0, 255), randint(0, 255)))
-            matrix.show()
-            col_num += 1
-            basic.pause(20)
-            matrix.clear()
-        }
-        col_num = 0
-        row_num += -1
-    }
-    row_num = 7
-}
 function clear_buffer () {
     my_selX = [cursorX]
     my_selY = [cursorY]
 }
 function Draw_to_pos (Xval: number, Yval: number) {
-    if (newX < 512) {
-        x2pos = Math.round(Math.map(newX, 0, 512, 7, cursorX))
-    } else if (newX >= 512) {
-        x2pos = Math.round(Math.map(newX, 513, 1023, cursorX, 0))
+    if (Xval < joy_MIDX) {
+        x2pos = Math.round(Math.map(Xval, joystk_resX_MIN, joy_MIDX, MAX_COLUMNS - 1, cursorX))
+    } else if (Xval >= joy_MIDX) {
+        x2pos = Math.round(Math.map(Xval, joy_MIDX, joystk_resX_MAX, cursorX, 0))
     }
-    if (newY < 512) {
-        y2pos = Math.round(Math.map(newY, 0, 512, 7, cursorY))
-    } else if (newY >= 512) {
-        y2pos = Math.round(Math.map(newY, 513, 1023, cursorY, 0))
+    if (Yval < joy_MIDY) {
+        y2pos = Math.round(Math.map(Yval, joystk_resY_MIN, joy_MIDY, MAX_ROWS - 1, cursorY))
+    } else if (Yval >= joy_MIDY) {
+        y2pos = Math.round(Math.map(Yval, joy_MIDY, joystk_resY_MAX, cursorY, 0))
     }
 }
 function UpdateMap (map_Row_Pos: number, map_Col_Pos: number, map_Col: number) {
@@ -169,6 +153,8 @@ function UpdateMap (map_Row_Pos: number, map_Col_Pos: number, map_Col: number) {
 }
 input.onButtonPressed(Button.A, function () {
     matrix.clear()
+    matrix.show()
+    bkup_pos_cursor = [cursorX, cursorY, neopixel.colors(NeoPixelColors.Black)]
 })
 function initColorMap (maxrow: number, maxcol: number) {
     colormap = [[neopixel.colors(NeoPixelColors.Black)]]
@@ -182,15 +168,6 @@ function initColorMap (maxrow: number, maxcol: number) {
         colormap.push([neopixel.colors(NeoPixelColors.Black)])
         rowcounter += 1
     }
-    Print_Color_map()
-    display_from_map(maxrow, maxcol)
-    basic.pause(500)
-    UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Green))
-    display_from_map(maxrow, maxcol)
-    UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Black))
-    basic.pause(500)
-    Print_Color_map()
-    matrix.clear()
 }
 function Cursor_to_pos3 (Xval: number, Yval: number) {
     if (Xval < 512) {
@@ -237,11 +214,21 @@ function display_from_map (maxrox: number, maxcol: number) {
 function update_x2y2 () {
 	
 }
+function Panel_test (maxrow: number, maxcol: number) {
+    panel_sweep(1)
+    UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Green))
+    basic.pause(500)
+    display_from_map(maxrow, maxcol)
+    UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Black))
+    display_from_map(maxrow, maxcol)
+    basic.pause(500)
+    Print_Color_map()
+    matrix.clear()
+}
 input.onButtonPressed(Button.B, function () {
-    let my_selCol: number[] = []
     serial.writeNumbers(my_selX)
     serial.writeNumbers(my_selY)
-    serial.writeNumbers(my_selCol)
+    initColorMap(MAX_ROWS, MAX_COLUMNS)
     clear_buffer()
 })
 radio.onReceivedValue(function (name, value) {
@@ -306,20 +293,37 @@ function msg_processor (name: string, value: number) {
         Cursor_to_pos3(newX, newY)
     }
 }
+function panel_sweep (iteration: number) {
+    row_num = 7
+    col_num = 0
+    for (let index = 0; index < 8; index++) {
+        for (let index = 0; index < 8; index++) {
+            matrix.setPixel(row_num, col_num, colorlist._pickRandom())
+            matrix.show()
+            col_num += 1
+            basic.pause(20)
+            matrix.clear()
+        }
+        col_num = 0
+        row_num += -1
+    }
+    row_num = 7
+}
+let col_num = 0
+let row_num = 0
 let prevCol = 0
 let drawing_now = false
 let prevRadioXY = 0
+let newY = 0
+let newX = 0
 let colcounter = 0
 let rowcounter = 0
 let y2pos = 0
-let newY = 0
 let x2pos = 0
-let newX = 0
 let my_selY: number[] = []
 let my_selX: number[] = []
-let col_num = 0
-let row_num = 0
 let colormap: number[][] = []
+let bkup_pos_cursor: number[] = []
 let msgValArr: number[] = []
 let msgNameArr: string[] = []
 let coloridx = 0
@@ -329,7 +333,19 @@ let cursorY = 0
 let cursorX = 0
 let MAX_COLUMNS = 0
 let MAX_ROWS = 0
+let joy_MIDY = 0
+let joy_MIDX = 0
+let joystk_resY_MAX = 0
+let joystk_resY_MIN = 0
+let joystk_resX_MAX = 0
+let joystk_resX_MIN = 0
 radio.setGroup(1)
+joystk_resX_MIN = 0
+joystk_resX_MAX = 1023
+joystk_resY_MIN = 0
+joystk_resY_MAX = 1023
+joy_MIDX = Math.round((joystk_resX_MAX - joystk_resX_MIN) / 2)
+joy_MIDY = Math.round((joystk_resY_MAX - joystk_resY_MIN) / 2)
 MAX_ROWS = 8
 MAX_COLUMNS = 8
 cursorX = 3
@@ -340,10 +356,6 @@ MAX_COLUMNS,
 MAX_ROWS,
 NeoPixelMode.RGB
 )
-matrix.Brightness(15)
-initColorMap(MAX_ROWS, MAX_COLUMNS)
-test_all(1)
-matrix.clear()
 colorlist = [
 neopixel.colors(NeoPixelColors.Red),
 neopixel.colors(NeoPixelColors.Orange),
@@ -356,12 +368,15 @@ neopixel.colors(NeoPixelColors.Purple),
 neopixel.colors(NeoPixelColors.White),
 neopixel.colors(NeoPixelColors.Black)
 ]
+matrix.Brightness(15)
+initColorMap(MAX_ROWS, MAX_COLUMNS)
+matrix.clear()
 coloridx = 0
 serial.writeValue("x", 0)
 clear_buffer()
 msgNameArr = []
 msgValArr = []
-let bkup_pos_cursor = [3, 3, neopixel.colors(NeoPixelColors.Red)]
+bkup_pos_cursor = [3, 3, neopixel.colors(NeoPixelColors.Red)]
 basic.forever(function () {
     if (!(drawing_now)) {
         if (bkup_pos_cursor[0] != cursorX || bkup_pos_cursor[1] != cursorY) {
@@ -374,7 +389,7 @@ basic.forever(function () {
             serial.writeValue("a", 2)
             matrix.setPixel(cursorX, cursorY, colorlist[coloridx])
             matrix.show()
-            basic.pause(100)
+            basic.pause(20)
             matrix.setPixel(cursorX, cursorY, neopixel.colors(NeoPixelColors.Black))
             matrix.show()
             basic.pause(20)
