@@ -9,109 +9,6 @@ y2pos=10181022-(10180000)
 =1022
 
 """
-def dummyInit():
-    global colormap
-    colormap = [[neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)],
-        [neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK),
-            neopixel.colors(NeoPixelColors.BLACK)]]
-    return colormap
 def clear_buffer():
     global my_selX, my_selY
     my_selX = [cursorX]
@@ -286,11 +183,11 @@ newY = 0
 newX = 0
 colcounter = 0
 rowcounter = 0
+colormap: List[List[number]] = []
 y2pos = 0
 x2pos = 0
 my_selY: List[number] = []
 my_selX: List[number] = []
-colormap: List[List[number]] = []
 bkup_pos_cursor: List[number] = []
 msgValArr: List[number] = []
 msgNameArr: List[str] = []

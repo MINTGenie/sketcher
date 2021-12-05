@@ -1,141 +1,3 @@
-/**
- * 10181022
- * 
- * temp = 1018
- * 
- * y2pos=10181022-(10180000)
- * 
- * =1022
- */
-function dummyInit () {
-    colormap = [
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ],
-    [
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black),
-    neopixel.colors(NeoPixelColors.Black)
-    ]
-    ]
-    return colormap
-}
-function clear_buffer () {
-    my_selX = [cursorX]
-    my_selY = [cursorY]
-}
 function Draw_to_pos (Xval: number, Yval: number) {
     if (Xval < joy_MIDX) {
         x2pos = Math.round(Math.map(Xval, joystk_resX_MIN, joy_MIDX, MAX_COLUMNS - 1, cursorX))
@@ -148,6 +10,70 @@ function Draw_to_pos (Xval: number, Yval: number) {
         y2pos = Math.round(Math.map(Yval, joy_MIDY, joystk_resY_MAX, cursorY, 0))
     }
 }
+function Cursor_to_pos2 (Xval3: number, Yval3: number) {
+    if (Xval3 < 512) {
+        cursorX += -1
+        if (cursorX < 0) {
+            cursorX = 0
+        }
+    } else if (Xval3 >= 512) {
+        cursorX += 1
+        if (cursorX > MAX_COLUMNS) {
+            cursorX = MAX_COLUMNS
+        }
+    }
+    if (newY < 512) {
+        cursorY += -1
+        if (cursorY < 0) {
+            cursorY = 0
+        }
+    } else if (newY >= 512) {
+        cursorY += 1
+        if (cursorY > MAX_ROWS) {
+            cursorY = MAX_ROWS
+        }
+    }
+}
+function panel_sweep (iteration: number) {
+    row_num = 7
+    col_num = 0
+    for (let index = 0; index < 8; index++) {
+        for (let index = 0; index < 8; index++) {
+            matrix.setPixel(row_num, col_num, colorlist._pickRandom())
+            matrix.show()
+            col_num += 1
+            basic.pause(20)
+            matrix.clear()
+        }
+        col_num = 0
+        row_num += -1
+    }
+    row_num = 7
+}
+// 10181022
+// 
+// temp = 1018
+// 
+// y2pos=10181022-(10180000)
+// 
+// =1022
+function clear_buffer () {
+    my_selX = [cursorX]
+    my_selY = [cursorY]
+}
+function Print_Color_map () {
+    rowcounter = 0
+    for (let value of colormap) {
+        serial.writeValue("row num", rowcounter)
+        serial.writeNumbers(value)
+        rowcounter += 1
+    }
+}
+radio.onReceivedValue(function (name, value2) {
+    msgNameArr.push(name)
+    msgValArr.push(value2)
+    serial.writeValue("msg len", msgValArr.length)
+})
 function UpdateMap (map_Row_Pos: number, map_Col_Pos: number, map_Col: number) {
     colormap[map_Row_Pos][map_Col_Pos] = map_Col
 }
@@ -169,58 +95,22 @@ function initColorMap (maxrow: number, maxcol: number) {
         rowcounter += 1
     }
 }
-function Cursor_to_pos3 (Xval: number, Yval: number) {
-    if (Xval < 512) {
-        cursorX = Math.round(Math.map(newX, 0, 512, 7, cursorX))
-    } else if (Xval >= 512) {
-        cursorX = Math.round(Math.map(newX, 513, 1023, cursorX, 0))
-    }
-    if (newY < 512) {
-        cursorY = Math.round(Math.map(newY, 0, 512, 7, cursorY))
-    } else if (newY >= 512) {
-        cursorY = Math.round(Math.map(newY, 513, 1023, cursorY, 0))
-    }
-}
-function Print_Color_map () {
-    rowcounter = 0
-    for (let value of colormap) {
-        serial.writeValue("row num", rowcounter)
-        serial.writeNumbers(value)
-        rowcounter += 1
-    }
-}
 input.onButtonPressed(Button.AB, function () {
     serial.writeValue("starting write len", my_selX.length)
-    for (let index = 0; index <= my_selX.length - 1; index++) {
-        matrix.setPixel(my_selX[index], my_selY[index], colormap[my_selX[index]][my_selY[index]])
+    while (index3 <= my_selX.length - 1) {
+        matrix.setPixel(my_selX[index3], my_selY[index3], colormap[my_selX[index3]][my_selY[index3]])
         matrix.show()
+        index3 += 1
     }
     serial.writeValue("starting write", 0)
 })
-function display_from_map (maxrox: number, maxcol: number) {
-    rowcounter = 0
-    colcounter = 0
-    matrix.Brightness(15)
-    for (let index = 0; index < maxrox; index++) {
-        for (let index = 0; index < maxcol; index++) {
-            matrix.setPixel(rowcounter, colcounter, colormap[rowcounter][colcounter])
-            matrix.show()
-            colcounter += 1
-        }
-        colcounter = 0
-        rowcounter += 1
-    }
-}
-function update_x2y2 () {
-	
-}
-function Panel_test (maxrow: number, maxcol: number) {
+function Panel_test (maxrow2: number, maxcol3: number) {
     panel_sweep(1)
     UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Green))
     basic.pause(500)
-    display_from_map(maxrow, maxcol)
+    display_from_map(maxrow2, maxcol3)
     UpdateMap(4, 5, neopixel.colors(NeoPixelColors.Black))
-    display_from_map(maxrow, maxcol)
+    display_from_map(maxrow2, maxcol3)
     basic.pause(500)
     Print_Color_map()
     matrix.clear()
@@ -231,43 +121,40 @@ input.onButtonPressed(Button.B, function () {
     initColorMap(MAX_ROWS, MAX_COLUMNS)
     clear_buffer()
 })
-radio.onReceivedValue(function (name, value) {
-    msgNameArr.push(name)
-    msgValArr.push(value)
-    serial.writeValue("msg len", msgValArr.length)
-})
-function Cursor_to_pos2 (Xval: number, Yval: number) {
-    if (Xval < 512) {
-        cursorX += -1
-        if (cursorX < 0) {
-            cursorX = 0
+function display_from_map (maxrox: number, maxcol2: number) {
+    rowcounter = 0
+    colcounter = 0
+    matrix.Brightness(15)
+    for (let index = 0; index < maxrox; index++) {
+        for (let index = 0; index < maxcol2; index++) {
+            matrix.setPixel(rowcounter, colcounter, colormap[rowcounter][colcounter])
+            matrix.show()
+            colcounter += 1
         }
-    } else if (Xval >= 512) {
-        cursorX += 1
-        if (cursorX > MAX_COLUMNS) {
-            cursorX = MAX_COLUMNS
-        }
-    }
-    if (newY < 512) {
-        cursorY += -1
-        if (cursorY < 0) {
-            cursorY = 0
-        }
-    } else if (newY >= 512) {
-        cursorY += 1
-        if (cursorY > MAX_ROWS) {
-            cursorY = MAX_ROWS
-        }
+        colcounter = 0
+        rowcounter += 1
     }
 }
-function msg_processor (name: string, value: number) {
-    if (name.includes("10000x+y")) {
-        if (value != prevRadioXY) {
-            serial.writeValue(name, value)
-            prevRadioXY = value
+function Cursor_to_pos3 (Xval2: number, Yval2: number) {
+    if (Xval2 < 512) {
+        cursorX = Math.round(Math.map(newX, 0, 512, 7, cursorX))
+    } else if (Xval2 >= 512) {
+        cursorX = Math.round(Math.map(newX, 513, 1023, cursorX, 0))
+    }
+    if (newY < 512) {
+        cursorY = Math.round(Math.map(newY, 0, 512, 7, cursorY))
+    } else if (newY >= 512) {
+        cursorY = Math.round(Math.map(newY, 513, 1023, cursorY, 0))
+    }
+}
+function msg_processor (name2: string, value3: number) {
+    if (name2.includes("10000x+y")) {
+        if (value3 != prevRadioXY) {
+            serial.writeValue(name2, value3)
+            prevRadioXY = value3
             drawing_now = true
-            newX = Math.idiv(value, 10000)
-            newY = value - newX * 10000
+            newX = Math.idiv(value3, 10000)
+            newY = value3 - newX * 10000
             Draw_to_pos(newX, newY)
             my_selX.push(x2pos)
             my_selY.push(y2pos)
@@ -275,54 +162,39 @@ function msg_processor (name: string, value: number) {
             matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
             matrix.show()
         }
-    } else if (name.includes("coloridx")) {
-        serial.writeValue(name, value)
+    } else if (name2.includes("coloridx")) {
+        serial.writeValue(name2, value3)
         prevCol = coloridx
         coloridx += 1
         if (coloridx > 9) {
             coloridx = 0
         }
-    } else if (name.includes("draw")) {
-        serial.writeValue(name, value)
+    } else if (name2.includes("draw")) {
+        serial.writeValue(name2, value3)
         cursorX = x2pos
         cursorY = y2pos
         drawing_now = false
-    } else if (name.includes("cursor")) {
-        newX = Math.idiv(value, 10000)
-        newY = value - newX * 10000
+    } else if (name2.includes("cursor")) {
+        newX = Math.idiv(value3, 10000)
+        newY = value3 - newX * 10000
         Cursor_to_pos3(newX, newY)
     }
 }
-function panel_sweep (iteration: number) {
-    row_num = 7
-    col_num = 0
-    for (let index = 0; index < 8; index++) {
-        for (let index = 0; index < 8; index++) {
-            matrix.setPixel(row_num, col_num, colorlist._pickRandom())
-            matrix.show()
-            col_num += 1
-            basic.pause(20)
-            matrix.clear()
-        }
-        col_num = 0
-        row_num += -1
-    }
-    row_num = 7
-}
-let col_num = 0
-let row_num = 0
 let prevCol = 0
 let drawing_now = false
 let prevRadioXY = 0
-let newY = 0
 let newX = 0
+let index3 = 0
 let colcounter = 0
+let colormap: number[][] = []
 let rowcounter = 0
-let y2pos = 0
-let x2pos = 0
 let my_selY: number[] = []
 let my_selX: number[] = []
-let colormap: number[][] = []
+let col_num = 0
+let row_num = 0
+let newY = 0
+let y2pos = 0
+let x2pos = 0
 let bkup_pos_cursor: number[] = []
 let msgValArr: number[] = []
 let msgNameArr: string[] = []
