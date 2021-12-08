@@ -5,7 +5,8 @@
         "core": "*",
         "radio": "*",
         "microphone": "*",
-        "pxt-smartmatrix": "github:Shorts1999/pxt-smartmatrix#v1.0.5"
+        "pxt-smartmatrix": "github:Shorts1999/pxt-smartmatrix#v1.0.5",
+        "AT24CXX": "github:makecode-extensions/at24xx#v1.0.0"
     },
     "files": [
         "main.blocks",

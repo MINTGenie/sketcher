@@ -1,3 +1,20 @@
+/**
+ * Etch-a-sketch EEPROM data format
+ * 
+ * 0: <Display type> (0: 8x8; 1:16x16; 2:8x32
+ * 
+ * 1: <pattern count>
+ * 
+ * 2,3,4: pattern1_name(3)
+ * 
+ * 5,6: <pattern_length>
+ * 
+ * 7,8: <pattern_start_addr>
+ * 
+ * 0x50: data start
+ * 
+ * 0x50,0x51: <LED_number><color_idx> ... repeat
+ */
 function Draw_to_pos (Xval: number, Yval: number) {
     if (Xval < joy_MIDX) {
         x2pos = Math.round(Math.map(Xval, joystk_resX_MIN, joy_MIDX, MAX_COLUMNS - 1, cursorX))
@@ -22,17 +39,31 @@ function Cursor_to_pos2 (Xval3: number, Yval3: number) {
             cursorX = MAX_COLUMNS
         }
     }
-    if (newY < 512) {
+    if (Yval3 < 512) {
         cursorY += -1
         if (cursorY < 0) {
             cursorY = 0
         }
-    } else if (newY >= 512) {
+    } else if (Yval3 >= 512) {
         cursorY += 1
         if (cursorY > MAX_ROWS) {
             cursorY = MAX_ROWS
         }
     }
+}
+function write_to_eeprom (dev_addr: number, mem_addr: number, value: number) {
+    pins.i2cWriteNumber(
+    dev_addr,
+    mem_addr,
+    NumberFormat.UInt16LE,
+    true
+    )
+    pins.i2cWriteNumber(
+    dev_addr,
+    value,
+    NumberFormat.UInt16LE,
+    true
+    )
 }
 function panel_sweep (iteration: number) {
     row_num = 7
@@ -82,6 +113,39 @@ input.onButtonPressed(Button.A, function () {
     matrix.show()
     bkup_pos_cursor = [cursorX, cursorY, neopixel.colors(NeoPixelColors.Black)]
 })
+function eeprom_Init () {
+    pattern_len = 0
+    counter1 = 0
+    write_to_eeprom(80, 0, 0)
+    for (let index = 0; index < 10; index++) {
+        value1 = randint(100000, 150000)
+        serial.writeValue("x", value1)
+        AT24CXX.write_dword(counter1, value1)
+        counter1 += 4
+    }
+    serial.writeValue("Done", 0)
+    counter1 = 0
+    for (let index = 0; index < 10; index++) {
+        value1 = AT24CXX.read_dword(counter1)
+        serial.writeValue("x", value1)
+        counter1 += 4
+    }
+    serial.writeValue("Done", 1)
+}
+function read_eeprom (dev_addr: number, mem_addr: number) {
+    pins.i2cWriteNumber(
+    dev_addr,
+    0,
+    NumberFormat.UInt8BE,
+    false
+    )
+    if (pins.i2cReadNumber(dev_addr, NumberFormat.UInt8BE, true) == 222) {
+        CONFIGURED_EEPROM = true
+    } else {
+        write_to_eeprom(80, 0, 222)
+        CONFIGURED_EEPROM = false
+    }
+}
 function initColorMap (maxrow: number, maxcol: number) {
     colormap = [[neopixel.colors(NeoPixelColors.Black)]]
     rowcounter = 0
@@ -95,14 +159,29 @@ function initColorMap (maxrow: number, maxcol: number) {
         rowcounter += 1
     }
 }
-input.onButtonPressed(Button.AB, function () {
-    serial.writeValue("starting write len", my_selX.length)
-    while (index3 <= my_selX.length - 1) {
-        matrix.setPixel(my_selX[index3], my_selY[index3], colormap[my_selX[index3]][my_selY[index3]])
-        matrix.show()
-        index3 += 1
+function read_eeprom_and_display (dev_addr: number, mem_addr: number, len: number) {
+    serial.writeValue("starting write len", len)
+    counter1 = 0
+    pins.i2cWriteNumber(
+    dev_addr,
+    mem_addr,
+    NumberFormat.UInt16LE,
+    false
+    )
+    for (let index = 0; index < len - 2; index++) {
+        draw_at_led_num = pins.i2cReadNumber(dev_addr, NumberFormat.UInt32BE, true)
+        coloridx_to_set = pins.i2cReadNumber(dev_addr, NumberFormat.UInt32BE, true)
+        strip.setPixelColor(draw_at_led_num, colorlist[coloridx_to_set])
+        strip.show()
+        counter1 += 1
     }
-    serial.writeValue("starting write", 0)
+    strip.setPixelColor(pins.i2cReadNumber(dev_addr, NumberFormat.UInt32BE, false), colorlist[coloridx_to_set])
+    strip.show()
+    serial.writeValue("Done", 1)
+}
+input.onButtonPressed(Button.AB, function () {
+    read_eeprom_and_display(80, 0, 10)
+    serial.writeValue("Writing_Done", 0)
 })
 function Panel_test (maxrow2: number, maxcol3: number) {
     panel_sweep(1)
@@ -120,6 +199,7 @@ input.onButtonPressed(Button.B, function () {
     serial.writeNumbers(my_selY)
     initColorMap(MAX_ROWS, MAX_COLUMNS)
     clear_buffer()
+    pattern_len = 0
 })
 function display_from_map (maxrox: number, maxcol2: number) {
     rowcounter = 0
@@ -147,6 +227,14 @@ function Cursor_to_pos3 (Xval2: number, Yval2: number) {
         cursorY = Math.round(Math.map(newY, 513, 1023, cursorY, 0))
     }
 }
+function draw_line () {
+    Draw_to_pos(newX, newY)
+    write_to_eeprom(80, x2pos * MAX_COLUMNS + y2pos, colorlist[coloridx])
+    pattern_len += 1
+    my_selX.push(x2pos)
+    my_selY.push(y2pos)
+    UpdateMap(x2pos, y2pos, colorlist[coloridx])
+}
 function msg_processor (name2: string, value3: number) {
     if (name2.includes("10000x+y")) {
         if (value3 != prevRadioXY) {
@@ -155,10 +243,7 @@ function msg_processor (name2: string, value3: number) {
             drawing_now = true
             newX = Math.idiv(value3, 10000)
             newY = value3 - newX * 10000
-            Draw_to_pos(newX, newY)
-            my_selX.push(x2pos)
-            my_selY.push(y2pos)
-            UpdateMap(x2pos, y2pos, colorlist[coloridx])
+            draw_line()
             matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
             matrix.show()
             basic.pause(20)
@@ -177,9 +262,9 @@ function msg_processor (name2: string, value3: number) {
         }
     } else if (name2.includes("draw")) {
         serial.writeValue(name2, value3)
+        drawing_now = false
         cursorX = x2pos
         cursorY = y2pos
-        drawing_now = false
     } else if (name2.includes("cursor")) {
         newX = Math.idiv(value3, 10000)
         newY = value3 - newX * 10000
@@ -189,16 +274,21 @@ function msg_processor (name2: string, value3: number) {
 let prevCol = 0
 let drawing_now = false
 let prevRadioXY = 0
+let newY = 0
 let newX = 0
-let index3 = 0
+let coloridx_to_set = 0
+let draw_at_led_num = 0
 let colcounter = 0
+let CONFIGURED_EEPROM = false
+let value1 = 0
+let counter1 = 0
+let pattern_len = 0
 let colormap: number[][] = []
 let rowcounter = 0
 let my_selY: number[] = []
 let my_selX: number[] = []
 let col_num = 0
 let row_num = 0
-let newY = 0
 let y2pos = 0
 let x2pos = 0
 let bkup_pos_cursor: number[] = []
@@ -217,6 +307,14 @@ let joystk_resY_MAX = 0
 let joystk_resY_MIN = 0
 let joystk_resX_MAX = 0
 let joystk_resX_MIN = 0
+let strip: neopixel.Strip = null
+serial.writeValue("starting write len", 0)
+strip = neopixel.create(DigitalPin.P0, 64, NeoPixelMode.RGB)
+strip.setBrightness(15)
+eeprom_Init()
+while (true) {
+	
+}
 radio.setGroup(1)
 joystk_resX_MIN = 0
 joystk_resX_MAX = 1023
@@ -247,6 +345,12 @@ neopixel.colors(NeoPixelColors.White),
 neopixel.colors(NeoPixelColors.Black)
 ]
 matrix.Brightness(15)
+matrix.scrollText(
+"MINT Genie",
+17,
+1,
+colorlist._pickRandom()
+)
 initColorMap(MAX_ROWS, MAX_COLUMNS)
 matrix.clear()
 coloridx = 0
