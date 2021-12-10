@@ -1,83 +1,77 @@
+/**
+ * / Etch-a-sketch EEPROM data format
+ * 
+ * // 0: Config Flag = 222 (0xDE)
+ * 
+ * // 1: <Display type> (0: 8x8; 1:16x16; 2:8x32
+ * 
+ * // 2: <pattern count>
+ * 
+ * // --- pattern headers---
+ * 
+ * // 3,4: <pattern_length>
+ * 
+ * // 5,6: <pattern_start_addr>
+ * 
+ * // 7,8,9:  pattern1_name(3)
+ * 
+ * // 0x50: data start
+ * 
+ * //
+ * 
+ * // 0x50,0x51,0x52: <LEDX><LEDY><color_idx> ... repeat
+ * 
+ * // 0x4B, 0x4C: lifetime pattern counts
+ * 
+ * // 0x4D, 0x4E:  Last data pos address
+ */
 function Pattern_reset_and_clr_disp () {
     matrix.clear()
     initColorMap(MAX_ROWS, MAX_COLUMNS)
-    pattern_len = 0
-    basic.pause(50)
     cursorX = Math.round(MAX_ROWS / 2)
     cursorY = Math.round(MAX_COLUMNS / 2)
 }
 function write_from_XYarray () {
+    serial.writeValue("lem mem addr", pattern_len_memaddr)
     while (writeXarray.length > 0) {
-        serial.writeValue("Xpos", writeXarray.shift())
+        basic.pause(100)
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, writeXarray.shift())
         basic.pause(100)
         pattern_len += 1
-        serial.writeValue("Ypos", writeYarray.shift())
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, writeYarray.shift())
         basic.pause(100)
         pattern_len += 1
-        serial.writeValue("Col", WriteColArray.shift())
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, WriteColArray.shift())
         basic.pause(100)
         pattern_len += 1
         AT24CXX.write_word(pattern_len_memaddr, pattern_len)
         basic.pause(100)
-        serial.writeValue("pattern len", AT24CXX.read_byte(pattern_len_memaddr))
-        basic.pause(100)
-        serial.writeValue("readX", AT24CXX.read_byte(pattern_data_start_addr - (pattern_len - 3)))
-        basic.pause(100)
-        serial.writeValue("readY", AT24CXX.read_byte(pattern_data_start_addr - (pattern_len - 2)))
-        basic.pause(100)
-        serial.writeValue("readY", AT24CXX.read_byte(pattern_data_start_addr - (pattern_len - 1)))
     }
-}
-/**
- * Update only on change
- */
-// 0: <Display type> (0: 8x8; 1:16x16; 2:8x32)
-// 
-// Etch-a-sketch EEPROM data format
-// 
-// 0x50,0x51: <LED_number><color_idx> ... repeat
-// 
-// 0x50: data start
-// 
-// 7,8: <pattern_start_addr>
-// 
-// 5,6: <pattern_length>
-// 
-// 2,3,4: pattern1_name(3)
-// 
-// 1: <pattern count>
-function Draw_to_pos (Xval: number, Yval: number) {
-    if (Xval < joy_MIDX) {
-        x2pos = Math.round(Math.map(Xval, joystk_resX_MIN, joy_MIDX, MAX_COLUMNS - 1, cursorX))
-    } else if (Xval >= joy_MIDX) {
-        x2pos = Math.round(Math.map(Xval, joy_MIDX, joystk_resX_MAX, cursorX, 0))
-    }
-    if (Yval < joy_MIDY) {
-        y2pos = Math.round(Math.map(Yval, joystk_resY_MIN, joy_MIDY, MAX_ROWS - 1, cursorY))
-    } else if (Yval >= joy_MIDY) {
-        y2pos = Math.round(Math.map(Yval, joy_MIDY, joystk_resY_MAX, cursorY, 0))
-    }
-    writeXarray.push(x2pos)
-    writeYarray.push(y2pos)
-    WriteColArray.push(coloridx)
-    UpdateMap(x2pos, y2pos, coloridx)
+    serial.writeValue("now reading back len", AT24CXX.read_word(pattern_len_memaddr))
 }
 function dump_eeprom_headers () {
-    serial.writeValue("Pattern count", AT24CXX.read_byte(PATTERN_CNT_ADDR))
     basic.pause(50)
-    serial.writeValue("Lifetime Pattern count", AT24CXX.read_byte(LIFETIME_PATTERN_CNT_ADDR))
+    tmp = AT24CXX.read_byte(PATTERN_CNT_ADDR)
+    serial.writeValue("Pattern count", tmp)
+    tmp = 0
+    basic.pause(50)
+    tmp = AT24CXX.read_byte(LIFETIME_PATTERN_CNT_ADDR)
+    serial.writeValue("Lifetime Pattern count", tmp)
+    tmp = 0
     basic.pause(50)
     serial.writeLine("Displaying pattern id, len & data loc")
     for (let index4 = 0; index4 <= pattern_count; index4++) {
-        serial.writeValue("Len", AT24CXX.read_word(PATTERN_LEN_OFFSET + index4 * PATTERN_DESC_SIZE))
+        tmp = AT24CXX.read_word(PATTERN_LEN_OFFSET + index4 * PATTERN_DESC_SIZE)
+        serial.writeValue("Len", tmp)
+        tmp = 0
         basic.pause(50)
-        serial.writeValue("addr", AT24CXX.read_word(PATTERN_ADDR_OFFSET + index4 * PATTERN_DESC_SIZE))
+        tmp = AT24CXX.read_word(PATTERN_ADDR_OFFSET + index4 * PATTERN_DESC_SIZE)
+        serial.writeValue("addr", tmp)
+        tmp = 0
         basic.pause(50)
     }
-    serial.writeValue("Last written data position", AT24CXX.read_word(LAST_DATA_POS_ADDR))
+    tmp = AT24CXX.read_word(LAST_DATA_POS_ADDR)
+    serial.writeValue("Last written data position", tmp)
 }
 radio.onReceivedValue(function (name, value2) {
     msgNameArr.push(name)
@@ -112,7 +106,7 @@ function read_eeprom_and_display2 (dev_addr: number, mem_addr: number, len: numb
     serial.writeValue("starting from addr", mem_addr)
     serial.writeValue("starting write len", len)
     counter1 = mem_addr
-    for (let index = 0; index < len; index++) {
+    for (let index = 0; index < len / 3; index++) {
         draw_at_ledX = AT24CXX.read_byte(counter1)
         basic.pause(50)
         counter1 += 1
@@ -122,9 +116,9 @@ function read_eeprom_and_display2 (dev_addr: number, mem_addr: number, len: numb
         coloridx_to_set = AT24CXX.read_byte(counter1)
         basic.pause(50)
         counter1 += 1
-        serial.writeNumbers([draw_at_ledX, draw_at_ledY, coloridx_to_set])
         matrix.setPixel(draw_at_ledX, draw_at_ledY, colorlist[coloridx_to_set])
         matrix.show()
+        serial.writeNumbers([draw_at_ledX, draw_at_ledY, coloridx_to_set])
         basic.pause(50)
     }
     serial.writeValue("Done", 1)
@@ -215,52 +209,13 @@ input.onButtonPressed(Button.AB, function () {
 input.onButtonPressed(Button.B, function () {
     dump_eeprom_headers()
 })
-function Cursor_to_pos3 (Xval2: number, Yval2: number) {
-    if (Xval2 < joy_MIDX) {
-        cursorX = Math.round(Math.map(Xval2, joystk_resX_MIN, joy_MIDX, MAX_COLUMNS - 1, cursorX))
-    } else if (Xval2 >= joy_MIDX) {
-        cursorX = Math.round(Math.map(Xval2, joy_MIDX, joystk_resX_MAX, cursorX, 0))
-    }
-    if (newY < joy_MIDY) {
-        cursorY = Math.round(Math.map(Yval2, joystk_resY_MIN, joy_MIDY, MAX_ROWS - 1, cursorY))
-    } else if (newY >= joy_MIDY) {
-        cursorY = Math.round(Math.map(Yval2, joy_MIDY, joystk_resY_MAX, cursorY, 0))
-    }
-}
 function erase_eeprom () {
-    for (let index5 = 0; index5 <= 83; index5++) {
+    for (let index5 = 0; index5 <= 1023; index5++) {
         AT24CXX.write_dword(index5, 0)
         basic.pause(50)
     }
     serial.writeValue("Erase Done", 0)
 }
-/**
- * / Etch-a-sketch EEPROM data format
- * 
- * // 0: Config Flag = 222 (0xDE)
- * 
- * // 1: <Display type> (0: 8x8; 1:16x16; 2:8x32
- * 
- * // 2: <pattern count>
- * 
- * // --- pattern headers---
- * 
- * // 3,4: <pattern_length>
- * 
- * // 5,6: <pattern_start_addr>
- * 
- * // 7,8,9:  pattern1_name(3)
- * 
- * // 0x50: data start
- * 
- * //
- * 
- * // 0x50,0x51,0x52: <LEDX><LEDY><color_idx> ... repeat
- * 
- * // 0x4B, 0x4C: lifetime pattern counts
- * 
- * // 0x4D, 0x4E:  Last data pos address
- */
 // // Etch-a-sketch EEPROM data format
 // 
 // 0: 0xDE (means configured)
@@ -286,7 +241,6 @@ function msg_processor (name2: string, value3: number) {
         drawing_now = true
         newX = Math.idiv(value3, 10000)
         newY = value3 - newX * 10000
-        Draw_to_pos(newX, newY)
         filter_XY_coordinates(newX, newY, true)
         matrix.setPixel(x2pos, y2pos, colorlist[coloridx])
         matrix.show()
@@ -305,7 +259,6 @@ function msg_processor (name2: string, value3: number) {
     } else if (name2.includes("commit")) {
         serial.writeValue(name2, value3)
         drawing_now = false
-        write_from_XYarray()
         serial.writeValue("writing pos to eeprom", 0)
     } else if (name2.includes("cursor")) {
         newX = Math.idiv(value3, 10000)
@@ -313,8 +266,7 @@ function msg_processor (name2: string, value3: number) {
         filter_XY_coordinates(newX, newY, false)
     } else if (name2.includes("dispM")) {
         serial.writeValue("disp_mode", 1)
-        matrix.clear()
-        initColorMap(MAX_ROWS, MAX_COLUMNS)
+        Pattern_reset_and_clr_disp()
         DISP_mode = true
         DRAW_NEW_MODE = false
         drawing_now = false
@@ -329,8 +281,12 @@ function msg_processor (name2: string, value3: number) {
             strip.clear()
             return
         }
-        selected_pattern_len = AT24CXX.read_word(PATTERN_LEN_OFFSET + PATTERN_DESC_SIZE * disp_mode_pattern_id)
-        Data_addr_of_pattern_to_disp = AT24CXX.read_word(PATTERN_ADDR_OFFSET + PATTERN_DESC_SIZE * disp_mode_pattern_id)
+        tmp = PATTERN_LEN_OFFSET + PATTERN_DESC_SIZE * disp_mode_pattern_id
+        selected_pattern_len = AT24CXX.read_word(tmp)
+        basic.pause(50)
+        tmp = PATTERN_ADDR_OFFSET + PATTERN_DESC_SIZE * disp_mode_pattern_id
+        Data_addr_of_pattern_to_disp = AT24CXX.read_word(tmp)
+        basic.pause(50)
         serial.writeLine("Displaying pattern id,  data loc and len")
         serial.writeNumbers([disp_mode_pattern_id, Data_addr_of_pattern_to_disp, selected_pattern_len])
         read_eeprom_and_display2(EEPROM_ADDR, Data_addr_of_pattern_to_disp, selected_pattern_len)
@@ -342,6 +298,7 @@ function msg_processor (name2: string, value3: number) {
         Pattern_reset_and_clr_disp()
     } else if (name2.includes("save_now")) {
         serial.writeValue("Saving Now", 1)
+        write_from_XYarray()
         pattern_count += 1
         if (pattern_count > 9) {
             pattern_count = 0
@@ -371,10 +328,10 @@ let selected_pattern_len = 0
 let DRAW_NEW_MODE = false
 let DISP_mode = false
 let prevCol = 0
+let newY = 0
 let newX = 0
 let drawing_now = false
 let prevRadioXY = 0
-let newY = 0
 let pattern_id = 0
 let lifetime_pattern_count = 0
 let CONFIGURED_EEPROM = false
@@ -388,6 +345,8 @@ let coloridx_to_set = 0
 let draw_at_ledY = 0
 let draw_at_ledX = 0
 let counter1 = 0
+let y2pos = 0
+let x2pos = 0
 let tmpY = 0
 let tmpX = 0
 let LAST_DATA_POS_ADDR = 0
@@ -397,11 +356,10 @@ let PATTERN_LEN_OFFSET = 0
 let pattern_count = 0
 let LIFETIME_PATTERN_CNT_ADDR = 0
 let PATTERN_CNT_ADDR = 0
-let y2pos = 0
-let x2pos = 0
-let pattern_len_memaddr = 0
-let pattern_data_start_addr = 0
+let tmp = 0
 let pattern_len = 0
+let pattern_data_start_addr = 0
+let pattern_len_memaddr = 0
 let WriteColArray: number[] = []
 let writeYarray: number[] = []
 let writeXarray: number[] = []
