@@ -34,18 +34,18 @@ function Pattern_reset_and_clr_disp () {
 function write_from_XYarray () {
     serial.writeValue("lem mem addr", pattern_len_memaddr)
     while (writeXarray.length > 0) {
-        basic.pause(100)
+        basic.pause(50)
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, writeXarray.shift())
-        basic.pause(100)
+        basic.pause(50)
         pattern_len += 1
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, writeYarray.shift())
-        basic.pause(100)
+        basic.pause(50)
         pattern_len += 1
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, WriteColArray.shift())
-        basic.pause(100)
+        basic.pause(50)
         pattern_len += 1
         AT24CXX.write_word(pattern_len_memaddr, pattern_len)
-        basic.pause(100)
+        basic.pause(50)
     }
     serial.writeValue("now reading back len", AT24CXX.read_word(pattern_len_memaddr))
 }
@@ -259,6 +259,7 @@ function msg_processor (name2: string, value3: number) {
     } else if (name2.includes("commit")) {
         serial.writeValue(name2, value3)
         drawing_now = false
+        write_from_XYarray()
         serial.writeValue("writing pos to eeprom", 0)
     } else if (name2.includes("cursor")) {
         newX = Math.idiv(value3, 10000)
@@ -298,7 +299,6 @@ function msg_processor (name2: string, value3: number) {
         Pattern_reset_and_clr_disp()
     } else if (name2.includes("save_now")) {
         serial.writeValue("Saving Now", 1)
-        write_from_XYarray()
         pattern_count += 1
         if (pattern_count > 9) {
             pattern_count = 0
@@ -385,8 +385,8 @@ let disp_mode_pattern_id = 0
 disp_mode_pattern_id = 0
 serial.writeValue("starting now", 0)
 EEPROM_ADDR = 80
-MAX_ROWS = 8
-MAX_COLUMNS = 8
+MAX_ROWS = 16
+MAX_COLUMNS = 16
 strip = neopixel.create(DigitalPin.P0, MAX_ROWS * MAX_COLUMNS, NeoPixelMode.RGB)
 strip.setBrightness(15)
 eeprom_Init()
