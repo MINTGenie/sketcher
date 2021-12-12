@@ -387,21 +387,21 @@ serial.writeValue("starting now", 0)
 EEPROM_ADDR = 80
 MAX_ROWS = 16
 MAX_COLUMNS = 16
-strip = neopixel.create(DigitalPin.P0, MAX_ROWS * MAX_COLUMNS, NeoPixelMode.RGB)
+strip = neopixel.create(DigitalPin.P1, MAX_ROWS * MAX_COLUMNS, NeoPixelMode.RGB)
 strip.setBrightness(15)
 eeprom_Init()
 serial.writeValue("eeprom init done", 1)
 radio.setGroup(1)
 joystk_resX_MIN = 0
-joystk_resX_MAX = 4096
+joystk_resX_MAX = 1023
 joystk_resY_MIN = 0
-joystk_resY_MAX = 4096
+joystk_resY_MAX = 1023
 joy_MIDX = Math.round((joystk_resX_MAX - joystk_resX_MIN) / 2)
 joy_MIDY = Math.round((joystk_resY_MAX - joystk_resY_MIN) / 2)
 cursorX = Math.round(MAX_ROWS / 2)
 cursorY = Math.round(MAX_COLUMNS / 2)
 matrix = SmartMatrix.create(
-DigitalPin.P0,
+DigitalPin.P1,
 MAX_COLUMNS,
 MAX_ROWS,
 NeoPixelMode.RGB
