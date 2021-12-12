@@ -388,7 +388,7 @@ EEPROM_ADDR = 80
 MAX_ROWS = 16
 MAX_COLUMNS = 16
 strip = neopixel.create(DigitalPin.P1, MAX_ROWS * MAX_COLUMNS, NeoPixelMode.RGB)
-strip.setBrightness(15)
+strip.setBrightness(20)
 eeprom_Init()
 serial.writeValue("eeprom init done", 1)
 radio.setGroup(1)
@@ -418,7 +418,7 @@ neopixel.colors(NeoPixelColors.Purple),
 neopixel.colors(NeoPixelColors.White),
 neopixel.colors(NeoPixelColors.Black)
 ]
-matrix.Brightness(15)
+matrix.Brightness(20)
 matrix.clear()
 coloridx = 0
 msgNameArr = ["none"]
