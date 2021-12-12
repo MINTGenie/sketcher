@@ -393,9 +393,9 @@ eeprom_Init()
 serial.writeValue("eeprom init done", 1)
 radio.setGroup(1)
 joystk_resX_MIN = 0
-joystk_resX_MAX = 1023
+joystk_resX_MAX = 4096
 joystk_resY_MIN = 0
-joystk_resY_MAX = 1023
+joystk_resY_MAX = 4096
 joy_MIDX = Math.round((joystk_resX_MAX - joystk_resX_MIN) / 2)
 joy_MIDY = Math.round((joystk_resY_MAX - joystk_resY_MIN) / 2)
 cursorX = Math.round(MAX_ROWS / 2)
