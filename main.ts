@@ -276,10 +276,14 @@ function msg_processor (name2: string, value3: number) {
             serial.writeValue("From the beginnning", 0)
         } else if (pattern_count == 0) {
             serial.writeValue("nothing to display", 0)
-            strip.showRainbow(1, 360)
-            strip.show()
+            matrix.scrollText(
+            "Empty",
+            17,
+            0,
+            neopixel.colors(NeoPixelColors.Purple)
+            )
+            matrix.show()
             basic.pause(2000)
-            strip.clear()
             return
         }
         tmp = PATTERN_LEN_OFFSET + PATTERN_DESC_SIZE * disp_mode_pattern_id
@@ -377,7 +381,6 @@ let joystk_resY_MAX = 0
 let joystk_resY_MIN = 0
 let joystk_resX_MAX = 0
 let joystk_resX_MIN = 0
-let strip: neopixel.Strip = null
 let MAX_COLUMNS = 0
 let MAX_ROWS = 0
 let EEPROM_ADDR = 0
@@ -387,8 +390,6 @@ serial.writeValue("starting now", 0)
 EEPROM_ADDR = 80
 MAX_ROWS = 16
 MAX_COLUMNS = 16
-strip = neopixel.create(DigitalPin.P1, MAX_ROWS * MAX_COLUMNS, NeoPixelMode.RGB)
-strip.setBrightness(20)
 eeprom_Init()
 serial.writeValue("eeprom init done", 1)
 radio.setGroup(1)
