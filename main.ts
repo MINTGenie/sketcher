@@ -260,22 +260,18 @@ function msg_processor (name2: string, value3: number) {
         serial.writeValue(name2, value3)
         drawing_now = false
         write_from_XYarray()
-        serial.writeValue("writing pos to eeprom", 0)
     } else if (name2.includes("cursor")) {
         newX = Math.idiv(value3, 10000)
         newY = value3 - newX * 10000
         filter_XY_coordinates(newX, newY, false)
     } else if (name2.includes("dispM")) {
-        serial.writeValue("disp_mode", 1)
         Pattern_reset_and_clr_disp()
         DISP_mode = true
         DRAW_NEW_MODE = false
         drawing_now = false
         if (disp_mode_pattern_id > MAX_PATTERNS || disp_mode_pattern_id > pattern_count) {
             disp_mode_pattern_id = 0
-            serial.writeValue("From the beginnning", 0)
         } else if (pattern_count == 0) {
-            serial.writeValue("nothing to display", 0)
             matrix.scrollText(
             "Empty",
             17,
@@ -297,7 +293,6 @@ function msg_processor (name2: string, value3: number) {
         read_eeprom_and_display2(EEPROM_ADDR, Data_addr_of_pattern_to_disp, selected_pattern_len)
         disp_mode_pattern_id += 1
     } else if (name2.includes("drawM")) {
-        serial.writeValue("Draw mode", 1)
         DISP_mode = false
         DRAW_NEW_MODE = true
         Pattern_reset_and_clr_disp()
