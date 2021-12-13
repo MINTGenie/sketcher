@@ -1,28 +1,15 @@
 /**
- * / Etch-a-sketch EEPROM data format
- * 
- * // 0: Config Flag = 222 (0xDE)
- * 
- * // 1: <Display type> (0: 8x8; 1:16x16; 2:8x32
- * 
- * // 2: <pattern count>
- * 
- * // --- pattern headers---
- * 
- * // 3,4: <pattern_length>
- * 
- * // 5,6: <pattern_start_addr>
- * 
- * // 7,8,9:  pattern1_name(3)
- * 
- * // 0x50: data start
- * 
- * //
- * 
+ * / Etch-a-sketch EEPROM data format 
+ * // 0: Config Flag = 222 (0xDE) 
+ * // 1: <Display type> (0: 8x8; 1:16x16; 2:8x32 
+ * // 2: <pattern count> 
+ * // --- pattern headers--- 
+ * // 3,4: <pattern_length> 
+ * // 5,6: <pattern_start_addr> 
+ * // 7,8,9:  pattern1_name(3) 
+ * // 0x50: data start * 
  * // 0x50,0x51,0x52: <LEDX><LEDY><color_idx> ... repeat
- * 
- * // 0x4B, 0x4C: lifetime pattern counts
- * 
+ * // 0x4B, 0x4C: lifetime pattern counts 
  * // 0x4D, 0x4E:  Last data pos address
  */
 function Pattern_reset_and_clr_disp () {
@@ -32,7 +19,7 @@ function Pattern_reset_and_clr_disp () {
     cursorY = Math.round(MAX_COLUMNS / 2)
 }
 function write_from_XYarray () {
-    serial.writeValue("lem mem addr", pattern_len_memaddr)
+   /* serial.writeValue("lem mem addr", pattern_len_memaddr)  */
     while (writeXarray.length > 0) {
         basic.pause(50)
         AT24CXX.write_byte(pattern_data_start_addr + pattern_len, writeXarray.shift())
@@ -47,7 +34,7 @@ function write_from_XYarray () {
         AT24CXX.write_word(pattern_len_memaddr, pattern_len)
         basic.pause(50)
     }
-    serial.writeValue("now reading back len", AT24CXX.read_word(pattern_len_memaddr))
+  /*  serial.writeValue("Len", AT24CXX.read_word(pattern_len_memaddr))   */
 }
 function dump_eeprom_headers () {
     basic.pause(50)
@@ -59,7 +46,7 @@ function dump_eeprom_headers () {
     serial.writeValue("Lifetime Pattern count", tmp)
     tmp = 0
     basic.pause(50)
-    serial.writeLine("Displaying pattern id, len & data loc")
+    serial.writeLine("Pattern id, len & data loc")
     for (let index4 = 0; index4 <= pattern_count; index4++) {
         tmp = AT24CXX.read_word(PATTERN_LEN_OFFSET + index4 * PATTERN_DESC_SIZE)
         serial.writeValue("Len", tmp)
@@ -216,25 +203,7 @@ function erase_eeprom () {
     }
     serial.writeValue("Erase Done", 0)
 }
-// // Etch-a-sketch EEPROM data format
-// 
-// 0: 0xDE (means configured)
-// 
-// 1: <Display type> (0: 8x8; 1:16x16; 2:8x32
-// 
-// 2: <pattern count>
-// 
-// // Store 10 patterns
-// 
-// 3,4: <pattern_length>
-// 
-// 5,6: <pattern_start_addr>
-// 
-// 7,8,9: pattern1_name(3)
-// 
-// // 0x50: data start
-// 
-// 0x50,0x51: <LED_number><color_idx> ... repeat
+
 function msg_processor (name2: string, value3: number) {
     if (name2.includes("10000x+y")) {
         prevRadioXY = value3
